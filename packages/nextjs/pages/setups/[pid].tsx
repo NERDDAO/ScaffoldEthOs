@@ -1,20 +1,26 @@
-import type { NextPage } from "next";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import Head from "next/head";
 import { useAppStore } from "~~/services/store/store";
-import { Address, AddressInput, Balance } from "../components/scaffold-eth";
-import { useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { ReadOnlyFunctionForm } from "../components/scaffold-eth/Contract/ReadOnlyFunctionForm";
+import { AddressInput } from "../../components/scaffold-eth";
 import { Contract } from "ethers";
 import { useContract, useNetwork, useProvider, useContractRead } from "wagmi";
+import AddLiquidity from "~~/components/AddLiquidity";
+import RemoveLiquidity from "~~/components/RemoveLiquidity";
 import {
   getContractVariablesAndNoParamsReadMethods,
   getAllContractFunctions,
   getDeployedContract,
-} from "../components/scaffold-eth/Contract/utilsContract";
+} from "../../components/scaffold-eth/Contract/utilsContract";
+import { BigNumber } from "ethers";
+import Covenant from "~~/components/Covenant";
 
-const ExampleUI: NextPage = () => {
+const Setup = () => {
+  const cov = Covenant();
+  console.log("cov: ", cov);
+  const router = useRouter();
+  const { pid } = router.query;
+
   const tempState = useAppStore(state => state.tempSlice.tempState);
   const setTempState = useAppStore(state => state.tempSlice.setTempState);
 
@@ -41,15 +47,14 @@ const ExampleUI: NextPage = () => {
   console.log("Contract: ", contract);
   console.log("Contract contractABI: ", contractABI);
 
-  // reads contract state
   const cRead = useContractRead({
     addressOrName: contractAddress,
     contractInterface: contractABI,
-    functionName: "setups",
+    functionName: "setup",
     chainId: 1,
     watch: true,
     cacheOnBlock: false,
-    args: [],
+    args: [BigNumber.from(pid)],
   });
 
   // sets contract state to app store
@@ -98,23 +103,15 @@ const ExampleUI: NextPage = () => {
                     borderRadius: "8px",
                   }}
                 >
-                  <div>Setup {index}</div>
-
-                  <div>
-                    {/* This is the spot to be working on for the routing */}
-                    <button
-                      style={{
-                        borderRadius: "25px",
-                        boxShadow: "0 16px 32px 0 rgba(0, 0, 0, 0.5)",
-                        padding: "5px",
-                        backgroundColor: "#F02419",
-                        margin: "2vh",
-                      }}
-                    >
-                      <Link href={`./setups/${index}`}>
-                        <a>View Setup {index}</a>
-                      </Link>
-                    </button>
+                  <div
+                    style={{
+                      display: "inline-block",
+                      padding: "2vw",
+                      margin: "8px",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    Setup {index}
                   </div>
 
                   <div
@@ -153,7 +150,20 @@ const ExampleUI: NextPage = () => {
                   >
                     Supply: {setup.totalSupply?.toString()}
                   </div>
+                  <div
+                    style={{
+                      // style as side by side buttons
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "10px",
+                    }}
+                  >
+                    <AddLiquidity />
 
+                    <RemoveLiquidity />
+                  </div>
                   <br></br>
                 </div>
               </div>
@@ -174,4 +184,4 @@ const ExampleUI: NextPage = () => {
   );
 };
 
-export default ExampleUI;
+export default Setup;
