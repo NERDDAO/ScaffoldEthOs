@@ -1,7 +1,8 @@
+import { Address } from "wagmi";
 import { useAccountBalance } from "~~/hooks/scaffold-eth/useAccountBalance";
 
 type TBalanceProps = {
-  address: string;
+  address: Address;
 };
 
 /**

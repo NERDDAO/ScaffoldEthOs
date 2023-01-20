@@ -3,7 +3,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { TAutoConnect, useAutoConnect } from "~~/hooks/scaffold-eth";
 import Balance from "~~/components/scaffold-eth/Balance";
-import { useSwitchNetwork } from "wagmi";
+import { Address, useSwitchNetwork } from "wagmi";
 import * as chain from "wagmi/chains";
 
 // todo: move this later scaffold config.  See TAutoConnect for comments on each prop
@@ -82,7 +82,7 @@ export default function RainbowKitCustomConnectButton() {
 
                   <div className="flex justify-center items-center border-1 rounded-lg">
                     <div className="hidden sm:inline-block">
-                      <Balance address={account.address} />
+                      <Balance address={account.address as Address} />
                     </div>
                     <button onClick={openAccountModal} type="button" className="btn btn-primary btn-sm">
                       <span className="m-1">{account.displayName}</span>
