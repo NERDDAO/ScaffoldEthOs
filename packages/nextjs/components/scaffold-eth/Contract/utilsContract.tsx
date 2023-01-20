@@ -6,6 +6,7 @@ import DisplayVariable from "~~/components/scaffold-eth/Contract/DisplayVariable
 import { ReadOnlyFunctionForm } from "./ReadOnlyFunctionForm";
 import { WriteOnlyFunctionForm } from "./WriteOnlyFunctionForm";
 import { Dispatch, SetStateAction } from "react";
+import { Address } from "wagmi";
 
 type GeneratedContractType = {
   address: string;
@@ -63,7 +64,7 @@ const getContractVariablesAndNoParamsReadMethods = (
                 <DisplayVariable
                   key={fn.name}
                   functionFragment={fn}
-                  contractAddress={contract.address}
+                  contractAddress={contract.address as Address}
                   refreshDisplayVariables={refreshDisplayVariables}
                 />
               );
@@ -93,7 +94,13 @@ const getContractReadOnlyMethodsWithParams = (
             const isQueryableWithParams =
               (fn.stateMutability === "view" || fn.stateMutability === "pure") && fn.inputs.length > 0;
             if (isQueryableWithParams) {
-              return <ReadOnlyFunctionForm key={fn.name} functionFragment={fn} contractAddress={contract.address} />;
+              return (
+                <ReadOnlyFunctionForm
+                  key={fn.name}
+                  functionFragment={fn}
+                  contractAddress={contract.address as Address}
+                />
+              );
             }
             return null;
           })
@@ -125,7 +132,7 @@ const getContractWriteMethods = (
                 <WriteOnlyFunctionForm
                   key={fn.name}
                   functionFragment={fn}
-                  contractAddress={contract.address}
+                  contractAddress={contract.address as Address}
                   setRefreshDisplayVariables={setRefreshDisplayVariables}
                 />
               );

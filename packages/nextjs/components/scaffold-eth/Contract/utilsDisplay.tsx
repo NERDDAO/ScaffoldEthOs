@@ -2,6 +2,7 @@ import { TransactionResponse } from "@ethersproject/providers";
 import { formatUnits } from "@ethersproject/units";
 import { BigNumber, ethers } from "ethers";
 import React, { Dispatch, ReactElement, SetStateAction, useCallback } from "react";
+import { Address as AddressType } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 
 type DisplayContent = string | number | BigNumber | Record<string, any> | TransactionResponse | undefined | unknown;
@@ -23,7 +24,7 @@ export const displayTxResult = (
   }
 
   if (typeof displayContent === "string" && displayContent.indexOf("0x") === 0 && displayContent.length === 42) {
-    return asText ? displayContent : <Address address={displayContent} />;
+    return asText ? displayContent : <Address address={displayContent as AddressType} />;
   }
 
   if (displayContent && Array.isArray(displayContent)) {
