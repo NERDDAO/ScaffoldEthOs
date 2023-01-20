@@ -1,6 +1,6 @@
 import { Contract } from "ethers";
 import { useMemo, useState } from "react";
-import { useContract, useNetwork, useProvider } from "wagmi";
+import { Address as AddressType, useContract, useNetwork, useProvider } from "wagmi";
 import {
   getAllContractFunctions,
   getContractReadOnlyMethodsWithParams,
@@ -8,7 +8,6 @@ import {
   getContractWriteMethods,
   getDeployedContract,
 } from "./utilsContract";
-import { parseAddressTo0x } from "~~/utils/scaffold-eth";
 import { Balance, Address } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/utils/scaffold-eth/useNetworkColor";
 
@@ -35,7 +34,7 @@ const ContractUI = ({ contractName }: TContractUIProps) => {
   }
 
   const contract: Contract | null = useContract({
-    address: parseAddressTo0x(contractAddress),
+    address: contractAddress as AddressType,
     abi: contractABI,
     signerOrProvider: provider,
   });
@@ -106,7 +105,7 @@ const ContractUI = ({ contractName }: TContractUIProps) => {
           )}
           <div className="flex">
             <div className="flex gap-1">
-              <Address address={contractAddress} />
+              <Address address={contractAddress as AddressType} />
               <Balance address={contractAddress} />
             </div>
           </div>

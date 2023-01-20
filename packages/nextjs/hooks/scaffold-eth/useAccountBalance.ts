@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { useBalance } from "wagmi";
+import { useBalance, Address } from "wagmi";
 import { useAppStore } from "~~/services/store/store";
-import { parseAddressTo0x } from "~~/utils/scaffold-eth";
 
-export function useAccountBalance(address?: string) {
+export function useAccountBalance(address?: Address) {
   const [isEthBalance, setIsEthBalance] = useState(true);
   const [balance, setBalance] = useState<number | null>(null);
   const price = useAppStore(state => state.ethPriceSlice.ethPrice);
@@ -13,7 +12,7 @@ export function useAccountBalance(address?: string) {
     isError,
     isLoading,
   } = useBalance({
-    address: address ? parseAddressTo0x(address) : undefined,
+    address: address,
     watch: true,
   });
 

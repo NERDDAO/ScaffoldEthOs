@@ -1,10 +1,10 @@
 import { FunctionFragment } from "ethers/lib/utils";
 import { useState } from "react";
-import { useContractRead } from "wagmi";
+import { Address, useContractRead } from "wagmi";
 import { displayTxResult } from "./utilsDisplay";
 import InputUI from "./InputUI";
 import { getFunctionInputKey } from "./utilsContract";
-import { parseAddressTo0x, toast } from "~~/utils/scaffold-eth";
+import { toast } from "~~/utils/scaffold-eth";
 
 const getInitialFormState = (functionFragment: FunctionFragment) => {
   const initialForm: Record<string, any> = {};
@@ -17,7 +17,7 @@ const getInitialFormState = (functionFragment: FunctionFragment) => {
 
 type TReadOnlyFunctionFormProps = {
   functionFragment: FunctionFragment;
-  contractAddress: string;
+  contractAddress: Address;
 };
 
 export const ReadOnlyFunctionForm = ({ functionFragment, contractAddress }: TReadOnlyFunctionFormProps) => {
@@ -29,7 +29,7 @@ export const ReadOnlyFunctionForm = ({ functionFragment, contractAddress }: TRea
     isFetching,
     refetch,
   } = useContractRead({
-    address: parseAddressTo0x(contractAddress),
+    address: contractAddress,
     abi: [functionFragment],
     functionName: functionFragment.name,
     args: keys.map(key => form[key]),

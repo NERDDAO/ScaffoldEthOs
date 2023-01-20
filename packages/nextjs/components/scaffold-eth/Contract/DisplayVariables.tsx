@@ -1,13 +1,13 @@
 import { FunctionFragment } from "ethers/lib/utils";
 import React, { useEffect } from "react";
-import { useContractRead } from "wagmi";
+import { Address, useContractRead } from "wagmi";
 import { displayTxResult } from "./utilsDisplay";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import { parseAddressTo0x, toast } from "~~/utils/scaffold-eth";
+import { toast } from "~~/utils/scaffold-eth";
 
 type TDisplayVariableProps = {
   functionFragment: FunctionFragment;
-  contractAddress: string;
+  contractAddress: Address;
   refreshDisplayVariables: boolean;
 };
 
@@ -17,7 +17,7 @@ const DisplayVariable = ({ contractAddress, functionFragment, refreshDisplayVari
     isFetching,
     refetch,
   } = useContractRead({
-    address: parseAddressTo0x(contractAddress),
+    address: contractAddress,
     abi: [functionFragment],
     functionName: functionFragment.name,
     args: [],
