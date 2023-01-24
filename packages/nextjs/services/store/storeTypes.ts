@@ -1,6 +1,7 @@
 import { StateCreator } from "zustand";
 import { TempSlice } from "~~/services/store/slices/tempSlice";
 import { TEthPriceSlice } from "~~/services/store/slices/ethPriceSlice";
+import { TFarmingPositionRequestSlice } from "~~/services/store/slices/farmingPositionRequestSlice";
 
 /**
  * The App store definition
@@ -8,6 +9,7 @@ import { TEthPriceSlice } from "~~/services/store/slices/ethPriceSlice";
 export type TAppStore = {
   tempSlice: TempSlice;
   ethPriceSlice: TEthPriceSlice;
+  farmingPositionRequestSlice: TFarmingPositionRequestSlice;
   /**
    * Add more slices here
    */
