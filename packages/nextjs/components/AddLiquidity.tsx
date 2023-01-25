@@ -11,6 +11,7 @@ import {
   getContractVariablesAndNoParamsReadMethods,
 } from "~~/components/scaffold-eth/Contract/utilsContract";
 import { useAppStore } from "~~/services/store/store";
+import { TFarmingPositionRequest } from "~~/services/store/slices/farmingPositionRequestSlice";
 
 function AddLiquidity() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,7 @@ function AddLiquidity() {
   const { pid } = router.query;
 
   const setTempState = useAppStore(state => state.tempSlice.setTempState);
+  const setfarmPositionRequest = useAppStore(state => state.farmingPositionRequestSlice.setFarmingPositionRequest);
 
   // Add state for form
   const contractName = "FarmMainRegularMinStakeABI";
@@ -61,15 +63,24 @@ function AddLiquidity() {
     }
   }, [cRead, setTempState]);
 
-  const cWrite = useContractRead({
-    addressOrName: contractAddress,
-    contractInterface: contractABI,
-    functionName: "setup",
-    chainId: 1,
-    watch: true,
-    cacheOnBlock: false,
-    args: [BigNumber.from(pid)],
-  });
+  // create an array of objects with the farmingPositionRequest declare type of tFarmingPositionRequest
+
+  // set farming request to appStore
+  useEffect(() => {
+    const farmingPositionRequest: TFarmingPositionRequest = {
+      setupIndex: 0,
+      amount0: 0,
+      amount1: 0,
+      positionOwner: "yomama",
+      amount0Min: 0,
+      amount1Min: 0,
+    };
+    setfarmPositionRequest(farmingPositionRequest);
+  }, [setfarmPositionRequest]);
+
+  //console log the FarmingPositionRequestSlice
+  const farmPositionRequest = useAppStore(state => state.farmingPositionRequestSlice.farmingPositionRequest);
+  console.log("farmPositionRequest", farmPositionRequest);
 
   return (
     <div>
