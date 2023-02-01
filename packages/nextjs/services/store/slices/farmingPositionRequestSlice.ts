@@ -10,6 +10,7 @@ struct FarmingPositionRequest {
   uint256 amount1Min;
 }
 */
+//todo import BigNumber;
 export type TFarmingPositionRequest = {
   setupIndex: number;
   amount0: number;

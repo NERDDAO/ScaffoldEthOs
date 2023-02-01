@@ -17,6 +17,14 @@ import { useEthPrice } from "~~/hooks/scaffold-eth";
 
 import NextNProgress from "nextjs-progressbar";
 
+import {
+  PluginsContextProvider,
+  Web3ContextProvider,
+  InitContextProvider,
+  GlobalContextsProvider,
+  cache,
+} from "@ethereansos/interfaces-core";
+
 const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   const price = useEthPrice();
   const setEthPrice = useAppStore(state => state.ethPriceSlice.setEthPrice);

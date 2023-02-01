@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import InputUI from "../components/scaffold-eth/Contract/InputUI";
 import { WriteOnlyFunctionForm } from "../components/scaffold-eth/Contract/WriteOnlyFunctionForm";
@@ -12,6 +12,21 @@ import {
 } from "~~/components/scaffold-eth/Contract/utilsContract";
 import { useAppStore } from "~~/services/store/store";
 import { TFarmingPositionRequest } from "~~/services/store/slices/farmingPositionRequestSlice";
+import FarmingComponent from "~~/components/FarmingComponent";
+import {
+  useWeb3,
+  useEthosContext,
+  getNetworkElement,
+  blockchainCall,
+  VOID_ETHEREUM_ADDRESS,
+  formatMoney,
+  fromDecimals,
+  web3Utils,
+  abi,
+  toDecimals,
+  isEthereumAddress,
+} from "@ethereansos/interfaces-core";
+import { getFarming } from "../logic/farming";
 
 function AddLiquidity() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,12 +35,15 @@ function AddLiquidity() {
   const { pid } = router.query;
 
   const setTempState = useAppStore(state => state.tempSlice.setTempState);
-  const setfarmPositionRequest = useAppStore(state => state.farmingPositionRequestSlice.setFarmingPositionRequest);
+  const [element, setElement] = useState();
 
   // Add state for form
   const contractName = "FarmMainRegularMinStakeABI";
   const { chain } = useNetwork();
   const provider = useProvider();
+  const web3Data = useWeb3();
+  const context = useEthosContext();
+  console.log("context: ", context);
 
   let contractAddress = "";
   let contractABI = [];
@@ -42,9 +60,14 @@ function AddLiquidity() {
   });
 
   const displayedContractFunctions = getAllContractFunctions(contract);
-  const contractMethodsDisplay = getContractVariablesAndNoParamsReadMethods(contract, displayedContractFunctions);
+  const contractMethodsDisplay = getContractVariablesAndNoParamsReadMethods(
+    contract,
+    displayedContractFunctions,
+    false,
+  );
   console.log("Contract: ", displayedContractFunctions);
   console.log("Contract contractABI: ", contractABI);
+  console.log("Contract contractAddress: ", contractMethodsDisplay);
 
   const cRead = useContractRead({
     addressOrName: contractAddress,
@@ -63,9 +86,16 @@ function AddLiquidity() {
     }
   }, [cRead, setTempState]);
 
-  // create an array of objects with the farmingPositionRequest declare type of tFarmingPositionRequest
+  // set element with the result of getFarming function using contractAddress
 
+  // create a consst with a setter called element that
+
+  // create an array of objects with the farmingPositionRequest declare type of tFarmingPositionRequest
+  //TODO dynamically add values to the farmingPositionRequest
   // set farming request to appStore
+
+  const setfarmPositionRequest = useAppStore(state => state.farmingPositionRequestSlice.setFarmingPositionRequest);
+
   useEffect(() => {
     const farmingPositionRequest: TFarmingPositionRequest = {
       setupIndex: 0,
@@ -82,88 +112,22 @@ function AddLiquidity() {
   const farmPositionRequest = useAppStore(state => state.farmingPositionRequestSlice.farmingPositionRequest);
   console.log("farmPositionRequest", farmPositionRequest);
 
+  //Load the setupComponent using the current setupIndex and contract address
+  const refresh = useCallback(() => {
+    setElement();
+    const address = contractAddress;
+    address && isEthereumAddress(address) && getFarming({ context, ...web3Data }, address).then(setElement);
+  }, [contractAddress]);
+
+  useEffect(() => refresh, [refresh]);
+
   return (
     <div>
-      <button onClick={() => setIsOpen(true)}>
-        <div
-          style={{
-            // format as button
-            boxShadow: "0 16px 32px 0 rgba(0, 0, 0, 0.7)",
-            padding: "20px 20px",
-            display: "inline-block",
-            backgroundColor: "#2E86AB",
-            borderRadius: "10px",
-            marginRight: "15px",
-          }}
-        >
-          Add Liquidity
-        </div>
-      </button>
-
-      {isOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <iframe
-            src="https://bafybeihvjs76yulobcfyak2gfpusauvqcgfxykxcqc42xli2q65py7emqm.ipfs.dweb.link/#/covenants/farming"
-            style={{ height: "800px", width: "1200px" }}
-          ></iframe>
-          <div
-            style={{
-              // add headings inside main div
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "20px",
-              backgroundColor: "#2E86AB",
-              borderRadius: "10px",
-              boxShadow: "0 16px 32px 0 rgba(0, 0, 0, 0.7)",
-            }}
-          >
-            <h1>Add Liquidity</h1>
-            <h2>Enter the amount of tokens you want to add</h2>
-            {/* add input fields */}
-            <WriteOnlyFunctionForm functionFragment={displayedContractFunctions[8]} contract={contract} />
-
-            <button
-              onClick={() => {
-                // send transaction
-                //contract?.addLiquidity(BigNumber.from(pid), tempState.tempStuff);
-                //setIsOpen(false);
-
-                console.log("form", form);
-              }}
-            >
-              Add Liquidity
-            </button>
-
-            <div
-              style={{
-                //format as UI box
-                boxShadow: "0 16px 32px 0 rgba(0, 0, 0, 0.7)",
-                padding: "20px 20px",
-                display: "inline-block",
-                backgroundColor: "#2E86AB",
-                borderRadius: "10px",
-                marginRight: "15px",
-              }}
-            >
-              <button onClick={() => setIsOpen(false)}>Close Pop-up</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <h1>Add Liquidity</h1>
+      <div>
+        <h2>Setup</h2>
+        <div>{!element ? "loading..." : <FarmingComponent refresh={refresh} element={element} />}</div>;
+      </div>
     </div>
   );
 }
