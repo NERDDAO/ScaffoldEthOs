@@ -13,6 +13,8 @@ import {
 import { useAppStore } from "~~/services/store/store";
 import { TFarmingPositionRequest } from "~~/services/store/slices/farmingPositionRequestSlice";
 import FarmingComponent from "~~/components/FarmingComponent";
+import * as text from "../public/data/context.json";
+
 import {
   useWeb3,
   useEthosContext,
@@ -36,13 +38,13 @@ function AddLiquidity() {
 
   const setTempState = useAppStore(state => state.tempSlice.setTempState);
   const [element, setElement] = useState();
+  const context = text;
 
   // Add state for form
   const contractName = "FarmMainRegularMinStakeABI";
   const { chain } = useNetwork();
   const provider = useProvider();
   const web3Data = useWeb3();
-  const context = useEthosContext();
   console.log("context: ", context);
 
   let contractAddress = "";
@@ -121,12 +123,21 @@ function AddLiquidity() {
 
   useEffect(() => refresh, [refresh]);
 
+  // load context
+
+  function setContext(context: { address: string; chainId: number; network: string }) {
+    console.log("context: ", context);
+    setTempState({ tempStuff: context });
+  }
   return (
     <div>
       <h1>Add Liquidity</h1>
       <div>
         <h2>Setup</h2>
-        <div>{!element ? "loading..." : <FarmingComponent refresh={refresh} element={element} />}</div>;
+        <div>
+          {!element ? "loading..." : <FarmingComponent refresh={refresh} element={element} context={context} />}
+        </div>
+        ;
       </div>
     </div>
   );

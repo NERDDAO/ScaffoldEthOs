@@ -22,9 +22,7 @@ import { getLogs } from "../logic/logger";
 async function getFactory(data, generation) {
   const { context, chainId, getGlobalContract } = data;
 
-  var factoryIndex = getNetworkElement({ context, chainId }, "factoryIndices")[
-    generation === "gen1" ? "farmingGen1" : "farming"
-  ];
+  var factoryIndex = "farming";
 
   if (factoryIndex === undefined || factoryIndex === null) {
     return [];
